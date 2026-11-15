@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dilution Radar — token launch radar, model dilution-1</title>
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<header class="top">
+  <div>
+    <h1>Dilution Radar</h1>
+    <p class="sub">A token launch radar that prices the crowd in. Every expected value is
+    divided by the farmers already standing in line — the board ranks by what
+    is left after the crowd takes its cut.</p>
+  </div>
+  <dl class="meta" id="meta"></dl>
+</header>
+<nav class="tabs" id="tabs" aria-label="Views">
+  <button data-tab="board" class="on">Board</button>
+  <button data-tab="crowd">Crowd lab</button>
+  <button data-tab="validation">Validation</button>
+  <button data-tab="setaside">Set aside</button>
+  <button data-tab="live">Live tokens</button>
+</nav>
+<main>
+  <section id="tab-board" class="tab on">
+    <div class="controls">
+      <label>Search <input id="q" type="search" placeholder="name, slug or category" autocomplete="off"></label>
+      <label>Verdict
+        <select id="verdict">
+          <option value="">all</option><option>ROBUST</option><option>FARM</option><option>THIN</option><option>SKIP</option>
+        </select>
+      </label>
+      <label>Sort
+        <select id="sort">
+          <option value="diluted">diluted value</option>
+          <option value="crowd">crowd factor</option>
+          <option value="tvl">TVL</option>
+          <option value="prob">launch probability</option>
+          <option value="net">net at $1,000</option>
+          <option value="flip">crowd-flip multiple</option>
+        </select>
+      </label>
+      <span class="count" id="count"></span>
+    </div>
+    <p class="note">Implied value is the <b>diluted</b> expected value — P(launch) × fitted
+    launch value ÷ crowd factor — so the board's order is the diluted order.
+    Click a row for the value, crowd and farm breakdown.</p>
+    <div class="tablewrap"><table id="board">
+      <thead><tr>
+        <th>#</th><th>Protocol</th><th>Category</th><th>TVL</th><th>Age</th>
+        <th>P(launch)</th><th>If it launches</th><th>Expected</th>
+        <th>Crowd</th><th>Farmers</th><th>Diluted value</th><th>Band</th>
+        <th>Verdict</th><th>Net $1K</th><th>Flip</th>
+      </tr></thead>
+      <tbody></tbody>
+    </table></div>
+  </section>
+  <section id="tab-crowd" class="tab">
+    <h2>Crowd lab</h2>
+    <p>Move the sliders and the board re-ranks live. The crowd multiplier scales
+    every row's crowd factor; the ticket sets the capital the farm plan is priced
+    at. The ticket cancels out of the ranking itself — the crowd factor is a
+    ratio of TVLs — but it changes the slice, the net and the verdict.</p>
+    <div class="lab">
+      <label>Crowd multiplier
+        <input id="mult" type="range" min="0.5" max="5" step="0.5" value="1">
+        <output id="multOut">1×</output>
+      </label>
+      <label>Typical ticket
+        <input id="ticket" type="range" min="100" max="10000" step="100" value="1000">
+        <output id="ticketOut">$1,000</output>
+      </label>
+    </div>
+    <p class="labsummary" id="labSummary"></p>
+    <h3>Top 20 at this crowd</h3>
+    <div class="tablewrap"><table id="labTop">
+      <thead><tr><th>#</th><th>Protocol</th><th>Crowd</th><th>Diluted value</th>
+      <th>Net at ticket</th><th>Verdict</th><th>Rank change</th></tr></thead>
+      <tbody></tbody>
+    </table></div>
+    <h3>Biggest movers</h3>
+    <p class="note">Rows that move at least 10 ranks when the crowd is at this multiple.</p>
+    <div class="tablewrap"><table id="labMovers">
+      <thead><tr><th>Protocol</th><th>Base rank</th><th>New rank</th><th>Move</th><th>Verdict now</th></tr></thead>
+      <tbody></tbody>
+    </table></div>
+  </section>
+  <section id="tab-validation" class="tab">
+    <h2>Validation</h2>
+    <div id="validation"></div>
+  </section>
+  <section id="tab-setaside" class="tab">
+    <h2>Set aside</h2>
+    <p class="note">Protocols the board does not rank, with the reason each one is out.
+    Nothing is dropped silently: 198 ranked + 144 set aside + 416 trading = 758.</p>
+    <div class="tablewrap"><table id="setaside">
+      <thead><tr><th>Protocol</th><th>Category</th><th>TVL</th><th>Why it is set aside</th></tr></thead>
+      <tbody></tbody>
+    </table></div>
+  </section>
+  <section id="tab-live" class="tab">
+    <h2>Live tokens</h2>
+    <p class="note">The 24 largest live-token protocols by market cap. They are the
+    comps the size curve is fitted on — and the warning: their curve is wide
+    (R² 0.14), so every value is a band, not a point.</p>
+    <div class="tablewrap"><table id="live">
+      <thead><tr><th>Protocol</th><th>Category</th><th>TVL</th><th>Market cap</th><th>7d</th></tr></thead>
+      <tbody></tbody>
+    </table></div>
+  </section>
+</main>
+<aside id="drawer" class="drawer" hidden>
+  <button class="close" id="drawerClose" aria-label="Close detail">×</button>
+  <div id="drawerBody"></div>
+</aside>
+<footer>
+  <p>Model dilution-1. Snapshot <span id="asof"></span> · <span id="source"></span> ·
+  floor $50M · 758 protocols. All inputs come from the snapshot; no external data,
+  no network. Farmer share 10%, T-bill 4%, ticket $1,000, gas 4 transactions.
+  The crowd is an estimate, not a count — see Validation.</p>
+</footer>
+<script src="../data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
